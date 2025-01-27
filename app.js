@@ -4,6 +4,9 @@ const https = require('https');
 const fs = require('fs');
 const bodyParser = require('body-parser');
 
+// IP 변수부분
+const allowedIPs = ['192.168.45.1', '127.0.0.1', '::ffff:127.0.0.1', '::1'];
+
 // SSL 부분
 const sslOptions = {
   key: fs.readFileSync('ssl/privkey.pem'),
@@ -35,7 +38,22 @@ app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // Get
 app.get('/', (req, res) => {
+  const clientIP = req.ip;
+  const ipv4Address = clientIP.match(/::ffff:(\d+\.\d+\.\d+\.\d+)/);
+  const ipAddress = ipv4Address ? ipv4Address[1] : clientIP;
+
+
+  if (!allowedIPs.includes(ipAddress)) {
+    console.log("[!] 사이트 점검으로 Maintenance 로 이동 : " + clientIP);
+    res.redirect('/maintenance');
+  } else {
+    console.log("[!] 사이트 점검이나 내부 IP : " + clientIP);
     res.sendFile(__dirname + '/public/index/index.html');
+  }
+});
+
+app.get('/maintenance', (req, res) => {
+  res.sendFile(__dirname + '/public/maintenance/maintenance.html');
 });
 
 app.get('/dongwon', (req, res) => {
