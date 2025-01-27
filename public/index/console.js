@@ -1,0 +1,2 @@
+console.log('%c주의하세요!', 'font-size: 5em; color: red; font-weight: bold;');
+console.log('%c이 기능은 개발자를 위해 제작된 기능입니다. 이 콘솔을 이용하여 사이트에 지장을 주는 경우, 접속이 차단될 수 있으며 그 정도가 심할 경우 서비스 상의 제재와 별개로 상응한 법적 조치를 취할 수 있습니다.', 'font-size: 1.5em; color: white; font-weight: 400;');

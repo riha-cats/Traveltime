@@ -1,4 +1,75 @@
 body {
+    margin: 0;
     font-family: 'Pretendard', sans-serif;
     background: linear-gradient(135deg, #1e1e2f, #121222);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.header {
+    text-align: center;
+    margin: 20px;
+}
+
+.header-title {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.header-subtitle {
+    font-size: 1.2rem;
+    color: #b0b0b0;
+}
+
+.main {
+    width: 90%;
+    max-width: 1200px;
+}
+
+.portfolio {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.portfolio-item {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.portfolio-item:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.portfolio-title {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.portfolio-description {
+    font-size: 1rem;
+    color: #b0b0b0;
+}
+
+.footer {
+    text-align: center;
+    padding: 10px 20px;
+    background: rgba(0, 0, 0, 0.8);
+    width: 100%;
+}
+
+.footer-text {
+    font-size: 0.9rem;
+    color: #b0b0b0;
 }
