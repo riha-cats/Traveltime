@@ -7,6 +7,9 @@ const bodyParser = require('body-parser');
 // IP 변수부분
 const allowedIPs = ['192.168.45.1', '127.0.0.1', '::ffff:127.0.0.1', '::1'];
 
+// 점검 변수 부분
+const maintenance = true;
+
 // SSL 부분
 const sslOptions = {
   key: fs.readFileSync('ssl/privkey.pem'),
@@ -42,13 +45,17 @@ app.get('/', (req, res) => {
   const ipv4Address = clientIP.match(/::ffff:(\d+\.\d+\.\d+\.\d+)/);
   const ipAddress = ipv4Address ? ipv4Address[1] : clientIP;
 
-
-  if (!allowedIPs.includes(ipAddress)) {
-    console.log("[!] 사이트 점검으로 Maintenance 로 이동 : " + clientIP);
-    res.redirect('/maintenance');
-  } else {
-    console.log("[!] 사이트 점검이나 내부 IP : " + clientIP);
+  if (maintenance == true) {
+    console.log("[!] 사이트 접속! : IP : " + clientIP);
     res.sendFile(__dirname + '/public/index/index.html');
+  } else {
+    if (!allowedIPs.includes(ipAddress)) {
+      console.log("[!] 사이트 점검으로 Maintenance 로 이동 : " + clientIP);
+      res.redirect('/maintenance');
+    } else {
+      console.log("[!] 사이트 점검이나 내부 IP : " + clientIP);
+      res.sendFile(__dirname + '/public/index/index.html');
+    }
   }
 });
 
