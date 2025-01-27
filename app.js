@@ -72,13 +72,6 @@ app.get('/dongwon', (req, res) => {
 
 
 
-
-
-
-
-
-
-
 // API Post
 // 댓글 업로드 부분
 app.post('/comments', (req, res) => {
@@ -102,6 +95,20 @@ app.get('/comments', (req, res) => {
       res.json(rows);
     }
   });
+});
+
+
+
+
+
+
+
+
+
+
+// 404 부분
+app.use((req, res) => {
+  res.status(404).sendFile(path.join(__dirname, 'public', '404', '404.html'));
 });
 
 
