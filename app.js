@@ -38,8 +38,24 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + '/public/index/index.html');
 });
 
+app.get('/dongwon', (req, res) => {
+  res.sendFile(__dirname + '/public/dongwon/dongwon.html');
+});
 
-// API Comments 부분
+
+
+
+
+
+
+
+
+
+
+
+
+// API Post
+// 댓글 업로드 부분
 app.post('/comments', (req, res) => {
   // DB 처리, Dongwon.js 로 옮겼
   require('./Utils/dongwon').addComment(req.body.nickname, req.body.comment, (err, result) => {
@@ -51,8 +67,7 @@ app.post('/comments', (req, res) => {
     }
   });
 });
-
-// API Comments Get 부분 (댓글 불러오기)
+// 댓글 불러오기
 app.get('/comments', (req, res) => {
   require('./Utils/dongwon').getComments((err, rows) => {
     if (err) {
