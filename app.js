@@ -45,7 +45,7 @@ app.get('/', (req, res) => {
   const ipv4Address = clientIP.match(/::ffff:(\d+\.\d+\.\d+\.\d+)/);
   const ipAddress = ipv4Address ? ipv4Address[1] : clientIP;
 
-  if (maintenance == true) {
+  if (maintenance !== true) {
     console.log("[!] 사이트 접속! : IP : " + clientIP);
     res.sendFile(__dirname + '/public/index/index.html');
   } else {
