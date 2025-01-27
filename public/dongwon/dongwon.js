@@ -8,11 +8,11 @@ const remainingPercentageElement = document.querySelector('.stats-card .stat-val
 const pruneCountElement = document.querySelector('.poru-card .stat-value');
 // 달러값 
 const dollarValueElement = document.querySelector('.won-card .dollar-value');
-const exchangeRate = 1429.53;
+const exchangeRate = 1431.07;
 
 // 비트코인 (자동화 시켜야할듯. 유지보수 귀찮)
 const bitcoinValueElement = document.querySelector('.bitcoin-card .bitcoin-value');
-const bitcoinprice = 149874958.08;
+const bitcoinprice = 141380970.61;
 
 const initialPrice = 14000.00;
 const initialDate = new Date(2025, 0, 12, 18, 0, 0, 0);
@@ -32,13 +32,13 @@ function updateTimer() {
     const totalMilliseconds = targetDate - initialDate;
     const remainingPercentage = Math.round((timeDiff / totalMilliseconds) * 100);
 
-    const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const totalHours = Math.floor(timeDiff / (1000 * 60 * 60));
+    const hours = totalHours;
     const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
     const milliseconds = timeDiff % 1000;
 
-    const formattedTime = `${days}일 ${hours}시간 ${minutes}분 ${seconds}초`;
+    const formattedTime = `${hours}시간 ${minutes}분 ${seconds}초`;
     timerElement.textContent = formattedTime;
     millisecondsElement.textContent = `.${String(milliseconds).padStart(3, '0')}`;
     remainingPercentageElement.textContent = remainingPercentage.toFixed(3) + "%";
