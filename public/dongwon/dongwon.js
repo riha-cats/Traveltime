@@ -16,7 +16,7 @@ const bitcoinprice = 149874958.08;
 
 const initialPrice = 14000.00;
 const initialDate = new Date(2025, 0, 12, 18, 0, 0, 0);
-const targetDate = new Date(2025, 0, 31, 17, 0, 0, 0);
+const targetDate = new Date(2025, 0, 31, 15, 30, 0, 0);
 
 function updateTimer() {
     const now = new Date();
