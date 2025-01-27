@@ -1,0 +1,33 @@
+body {
+    font-family: 'Pretendard';
+    background: linear-gradient(85deg, #1e1e2f, #121222);
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    text-align: center;
+    padding: 20px;
+    background-color: rgba(66, 66, 66, 0.534);
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    color: white;
+}
+
+.logo {
+    max-width: 200px;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: 2em;
+    margin-bottom: 10px;
+}
+
+p {
+    font-size: 1.2em;
+    color: #979797;
+}

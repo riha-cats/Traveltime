@@ -8,7 +8,7 @@ const bodyParser = require('body-parser');
 const allowedIPs = ['192.168.45.1', '127.0.0.1', '::ffff:127.0.0.1', '::1'];
 
 // 점검 변수 부분
-const maintenance = true;
+const maintenance = false;
 
 // SSL 부분
 const sslOptions = {
