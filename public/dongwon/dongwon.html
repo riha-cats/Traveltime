@@ -1,16 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>동원이가 사라지는 날</title>
     <link rel="stylesheet" href="/public/dongwon/dongwon.css">
     <link rel="stylesheet" href="/public/Multi/font.css">
+    <script src="/public/Multi/console.js"></script>
 </head>
 <body>
     <div class="container">
-        <h4 style="color: red; font-weight: 100;">현재 오류로 인해 댓글을 이용할 수 없어요</h4>
-
         <div class="dashboard">
             <!-- 타이머 -->
             <div class="card timer-card">
@@ -76,7 +75,7 @@
             <textarea id="comment" placeholder="댓글을 입력하세요(125자 이내)" maxlength="125"></textarea><br>
             <button id="add-comment-btn">댓글 추가</button>
         </div>
-        <a href="/">메인으로 돌아가기</a>
+        <a href="/" id="backtomain">메인으로 돌아가기</a>
     </div>
     <script src="../socket.io/socket.io.js"></script>
     <script src="/public/dongwon/dongwon.js"></script>

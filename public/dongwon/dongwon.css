@@ -198,3 +198,21 @@ button {
 button:hover {
     background: #3333cc;
 }
+
+
+#backtomain {
+    background: #8484ff00;
+    color: #ffffff;
+    border: none;
+    width: 20%;
+    text-align: center;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: ease-in-out all 0.3s;
+}
+#backtomain:hover {
+    background: #8484ff70;
+}
