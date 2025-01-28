@@ -167,16 +167,27 @@ function addComment(){
 
     fetch('/comments', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ nickname, comment })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+            nickname: nickname.trim().slice(0, 7), 
+            comment: comment.trim().slice(0, 125) 
+        })
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP 오류: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
+        if(!data.success) throw new Error(data.error);
         getComments();
         commentInput.value = '';
         commentCounter.textContent = `0/125`;
+    })
+    .catch(error => {
+        console.error('[!] 오류가 발생했습니다:', error);
+        alert(`오류! 개발자에게 문의하세요: ${error.message}`);
     });
 
 }
