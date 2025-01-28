@@ -4,6 +4,7 @@ let isTesting = false;
 let isReady = false;
 let startTime;
 let chart;
+let timeoutId;
 
 
 function updateCount() {
@@ -23,6 +24,7 @@ function initializeTest() {
     updateCount();
 }
 
+// 그래프는 나중에 추가
 function setupChart() {
     const ctx = document.getElementById('responseChart').getContext('2d');
     
@@ -66,19 +68,21 @@ function setupChart() {
 
 function startCountdown() {
     isTesting = true;
+    isReady = false;
     const statusText = document.querySelector('.status-text');
     let count = 3;
     
     const countdownInterval = setInterval(() => {
-        statusText.textContent = `테스트 시작까지 ${count}초`;
+        statusText.textContent = count > 0 
+            ? `테스트 시작까지 ${count}초` 
+            : "준비하세요!";
         count--;
         
-        if (count < 0) {
+        if (count < -1) {
             clearInterval(countdownInterval);
             prepareTest();
         }
     }, 1000);
-    updateCount();
 }
 
 function prepareTest() {
@@ -89,42 +93,46 @@ function prepareTest() {
     statusText.textContent = "준비 중...";
     isReady = false;
 
-    const delayTime = Math.random() * 2000 + 1000;
+    if(timeoutId) clearTimeout(timeoutId);
+
+    const delayTime = Math.random() * 3000 + 1000; 
     
-    setTimeout(() => {
+    timeoutId = setTimeout(() => {
         isReady = true;
         clickBox.classList.add('ready', 'waiting');
         statusText.textContent = "클릭하세요!";
         startTime = Date.now();
     }, delayTime);
-    updateCount();
 }
 
 function handleBoxClick() {
-    if (!isTesting || !isReady) return;
+    if (!isTesting) return;
 
     const clickBox = document.querySelector('.click-box');
     const statusText = document.querySelector('.status-text');
-    
-    if (clickBox.classList.contains('ready') && isReady) {
-        const reactionTime = Date.now() - startTime - 75;
-        reactionTimes.push(reactionTime);
-        testCount++;
-        
-        updateChart(reactionTime);
-        clickBox.classList.remove('ready', 'waiting');
-        statusText.textContent = `${reactionTime}ms`;
 
-        if (testCount === 5) {
-            showAverage();
-            isTesting = false;
-            testCount = 0;
-        } else {
-            setTimeout(prepareTest, 1500);
-        }
-    } else {
-        statusText.textContent = "조기 클릭! 다시 시작";
+    if (!isReady) {
+        statusText.textContent = "조기 클릭! 2초 후 재시작";
+        clickBox.classList.add('error');
         resetTest();
+        return;
+    }
+
+    // 정상 클릭 처리
+    const reactionTime = Date.now() - startTime;
+    reactionTimes.push(reactionTime);
+    testCount++;
+    
+    updateChart(reactionTime);
+    clickBox.classList.remove('ready', 'waiting');
+    statusText.textContent = `${reactionTime}ms`;
+
+    if (testCount === 5) {
+        showAverage();
+        isTesting = false;
+        testCount = 0;
+    } else {
+        setTimeout(prepareTest, 1500);
     }
     updateCount();
 }
@@ -140,24 +148,83 @@ function updateChart(time) {
 
 function showAverage() {
     const average = reactionTimes.reduce((a, b) => a + b, 0) / reactionTimes.length;
-    document.querySelector('.average-result').textContent = 
-        `평균 반응속도: ${average.toFixed(1)}ms`;
-    reactionTimes = [];
-    updateCount();
+    const averageDisplay = average.toFixed(1);
+    document.querySelector('.average-result').textContent = `평균 반응속도: ${averageDisplay}ms`;
+    document.querySelector('.result-form').style.display = 'block';
+    document.getElementById('submitScore').addEventListener('click', async () => {
+        const nickname = document.getElementById('nicknameInput').value.trim();
+        if (!nickname || nickname.length > 12) {
+            alert('닉네임을 1~12자로 입력해주세요');
+            return;
+        }
+
+        try {
+            // 서버 결과 제출
+            const response = await fetch('/upload/delayspeedtest', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    nickname: nickname,
+                    average: averageDisplay
+                })
+            });
+
+            if (!response.ok) throw new Error('제출 실패');
+            
+            // 랭킹 불러오기
+            loadRankings();
+        } catch (error) {
+            console.error('제출 오류:', error);
+            alert('기록 제출에 실패했습니다.');
+        }
+    });
 }
+
+// 랭크 로드쪽
+async function loadRankings() {
+    try {
+        const response = await fetch('/api/delayrank');
+        const rankings = await response.json();
+        
+        const rankingsHTML = rankings.map((entry, index) => 
+            `<div class="rank-item">
+                <span class="rank">${index + 1}위</span>
+                <span class="nickname">${entry.nickname}</span>
+                <span class="score">${entry.average}ms</span>
+            </div>`
+        ).join('');
+        
+        document.getElementById('rankings').innerHTML = rankingsHTML;
+    } catch (error) {
+        console.error('랭킹 로드 오류:', error);
+    }
+}
+
 
 function resetTest() {
     isTesting = false;
+    isReady = false;
     testCount = 0;
     reactionTimes = [];
+    
+    if(timeoutId) clearTimeout(timeoutId);
+    
     setTimeout(() => {
+        const clickBox = document.querySelector('.click-box');
+        const statusText = document.querySelector('.status-text');
+        
         document.querySelector('.average-result').textContent = '';
-        chart.data.labels = [];
-        chart.data.datasets[0].data = [];
-        chart.update();
+        statusText.textContent = "재시작 중...";
+        clickBox.classList.remove('error');
+        
+        if(chart) {
+            chart.data.labels = [];
+            chart.data.datasets[0].data = [];
+            chart.update();
+        }
+        
         startCountdown();
     }, 2000);
-    updateCount();
 }
 
 updateCount();

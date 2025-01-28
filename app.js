@@ -9,6 +9,7 @@ const DOMPurify = require('isomorphic-dompurify');
 
 // 유틸쪽
 const dongwon = require('./Utils/dongwon');
+const { insertScore, getRankings } = require('./Utils/delayspeed');
 
 // Env 세팅
 const PORT = process.env.PORT || 443;
@@ -91,6 +92,40 @@ app.get('/dongwon', checkMaintenance, (req, res) => {
   res.sendFile(path.resolve(__dirname, 'public', 'dongwon', 'dongwon.html'));
 });
 
+app.get('/delayspeed', checkMaintenance, (req, res) => {
+  const clientIP = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket.remoteAddress;
+  console.log(`[ACCESS] Site accessed from ${clientIP}`);
+  res.sendFile(path.resolve(__dirname, 'public', 'delayspeed', 'delayspeed.html'));
+});
+
+
+
+// API
+app.get('/api/delayrank', async (req, res) => {
+  try {
+      const rankings = await getRankings();
+      res.json(rankings);
+  } catch (error) {
+      console.error(`[ERROR] /api/delayrank: ${error.message}`);
+      res.status(500).json({ 
+          success: false, 
+          error: '랭킹을 불러올 수 없습니다.' 
+      });
+  }
+});
+
+app.get('/api/check-maintenance', (req, res) => {
+  res.json({
+    maintenance: process.env.MAINTENANCE_MODE === 'true',
+    allowedIPs: process.env.ALLOWED_IPS?.split(',')
+  });
+});
+
+
+
+// POST
+
+// 동원
 app.post('/comments', async (req, res) => {
   
   // Console log
@@ -133,6 +168,28 @@ app.get('/comments', async (req, res) => {
   }
 });
 
+// DelayTest
+app.post('/upload/delayspeedtest', async (req, res) => {
+  try {
+      const sanitizedData = {
+          nickname: DOMPurify.sanitize(req.body.nickname?.slice(0, 12)),
+          average: parseFloat(req.body.average)
+      };
+
+      if (!sanitizedData.nickname || isNaN(sanitizedData.average)) {
+          return res.status(400).json({ success: false, error: '잘못된 데이터 형식' });
+      }
+
+      await insertScore(sanitizedData.nickname, sanitizedData.average);
+      res.json({ success: true });
+  } catch (error) {
+      console.error(`[ERROR] /upload/delayspeedtest: ${error.message}`);
+      res.status(500).json({ 
+          success: false, 
+          error: '서버 오류 발생' 
+      });
+  }
+});
 
 
 

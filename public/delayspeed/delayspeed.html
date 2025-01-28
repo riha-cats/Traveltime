@@ -2,12 +2,11 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viaewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>주의하세요! - 개발중</title>
     <link rel="stylesheet" href="/public/delayspeed/delayspeed.css">
     <link rel="stylesheet" href="/public/Multi/font.css">
     <script src="/public/Multi/console.js"></script>
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'">
 </head>
 <body>
 
@@ -21,11 +20,19 @@
         <div class="chart-container">
             <canvas id="responseChart"></canvas>
         </div>
+        <br>
         <a href="/" id="backtomain">메인으로 돌아가기</a>
     </div>
 
+    <div class="result-form" style="display:none;">
+        <input type="text" id="nicknameInput" placeholder="닉네임 (최대 12자)" maxlength="12">
+        <button id="submitScore">기록 제출</button>
+        <div id="rankings"></div>
+    </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js"></script>
+
+    <script src="/public/Multi/chart.min.js"></script>
+    <script src="/public/Multi/chart.umd.js"></script>
     <script src="/public/delayspeed/delayspeed.js"></script>
 </body>
 </html>
