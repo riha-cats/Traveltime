@@ -17,6 +17,36 @@ const SSL_CERT_PATH = process.env.SSL_CERT_PATH || 'ssl/fullchain.pem';
 const SSL_CA_PATH = process.env.SSL_CA_PATH || 'ssl/chain.pem';
 const allowedIPs = process.env.ALLOWED_IPS?.split(',') || ['192.168.45.1', '127.0.0.1'];
 
+
+
+// Dongwon.js 쪽 Socket.io 부분 (1/28/25)
+const { Server } = require('socket.io');
+const io = new Server(server, {
+  cors: {
+    origin: "https://mcfriday.xyz",
+    credentials: true,
+    methods: ["GET", "POST"]
+  }
+});
+
+// 접속자 확인코드
+let onlineUsers = 0;
+
+io.on('connection', (socket) => {
+  onlineUsers++;
+  io.emit('userCount', onlineUsers);
+  console.log(`[Socket] 연결: ${socket.id} (현재 사용자: ${onlineUsers})`);
+
+  socket.on('disconnect', () => {
+    onlineUsers--;
+    io.emit('userCount', onlineUsers);
+    console.log(`[Socket] 연결 해제: ${socket.id} (남은 사용자: ${onlineUsers})`);
+  });
+});
+
+
+
+
 // Express app 셋
 const app = express();
 app.set('trust proxy', true);
@@ -142,4 +172,6 @@ server.listen(PORT, () => {
   console.log(`Listening on https://${process.env.DOMAIN || 'localhost'}:${PORT}`);
 });
 
-module.exports = server;
+// App Moduel Export 쪽으로 변경.
+// Server 쪽은 강의글 보다 실패 ㅎ;
+module.exports = app;
