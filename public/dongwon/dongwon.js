@@ -111,7 +111,7 @@ function updatePrice() {
     const now = new Date();
     const timeDiff = now - initialDate;
     const secondsDiff = Math.floor(timeDiff / 1000);
-    const ratePerSecond = (initialPrice * (initialPrice * 0.0015) + (initialPrice * 0.1));
+    const ratePerSecond = (initialPrice * (initialPrice * 0.00152) + (initialPrice * 0.1));
     const currentPrice = initialPrice + (ratePerSecond * secondsDiff);
 
     priceElement.textContent = formatPrice(currentPrice.toFixed(0));

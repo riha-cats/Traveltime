@@ -60,6 +60,7 @@ body {
     font-size: 1.2em;
 }
 
+
 .dollar-value, .bitcoin-value {
     font-size: 1.6rem;
     font-weight: 600;
@@ -104,7 +105,7 @@ body {
 }
 
 .stat-value {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     font-weight: 600;
     margin-bottom: 8px;
     color: #ffffff;
@@ -137,7 +138,7 @@ body {
     border: 1px solid #333;
     border-radius: 12px;
     padding: 15px;
-    max-height: 250px;
+    max-height: 350px;
     overflow-y: auto;
     margin-top: 10px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
