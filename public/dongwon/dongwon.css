@@ -200,6 +200,13 @@ button:hover {
     background: #3333cc;
 }
 
+input {
+    font-family: 'Pretendard', sans-serif;
+}
+textarea {
+    font-family: 'Pretendard', sans-serif;
+}
+
 
 #backtomain {
     background: #8484ff00;
