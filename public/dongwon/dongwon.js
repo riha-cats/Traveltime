@@ -216,6 +216,9 @@ setInterval(() => {
     getComments();
 }, 1000);
 
+// 최초 실행쪽
+getComments();
+
 
 // 동원이가 자기가 귀엽다는데 조금 개가타용. 
 const connectPlayerSpan = document.getElementById('connect-player');
