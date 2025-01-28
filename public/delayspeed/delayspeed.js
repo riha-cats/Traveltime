@@ -5,15 +5,22 @@ let isReady = false;
 let startTime;
 let chart;
 
+
+function updateCount() {
+    document.getElementById('count').textContent = `[ ${count}/5 ]`;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     initializeTest();
     setupChart();
+    updateCount();
 });
 
 function initializeTest() {
     const clickBox = document.querySelector('.click-box');
     clickBox.addEventListener('click', handleBoxClick);
     startCountdown();
+    updateCount();
 }
 
 function setupChart() {
@@ -54,6 +61,7 @@ function setupChart() {
             }
         }
     });
+    updateCount();
 }
 
 function startCountdown() {
@@ -70,6 +78,7 @@ function startCountdown() {
             prepareTest();
         }
     }, 1000);
+    updateCount();
 }
 
 function prepareTest() {
@@ -88,6 +97,7 @@ function prepareTest() {
         statusText.textContent = "클릭하세요!";
         startTime = Date.now();
     }, delayTime);
+    updateCount();
 }
 
 function handleBoxClick() {
@@ -116,6 +126,7 @@ function handleBoxClick() {
         statusText.textContent = "조기 클릭! 다시 시작";
         resetTest();
     }
+    updateCount();
 }
 
 function updateChart(time) {
@@ -124,6 +135,7 @@ function updateChart(time) {
         chart.data.datasets[0].data.push(time);
         chart.update();
     }
+    updateCount();
 }
 
 function showAverage() {
@@ -131,6 +143,7 @@ function showAverage() {
     document.querySelector('.average-result').textContent = 
         `평균 반응속도: ${average.toFixed(1)}ms`;
     reactionTimes = [];
+    updateCount();
 }
 
 function resetTest() {
@@ -144,4 +157,5 @@ function resetTest() {
         chart.update();
         startCountdown();
     }, 2000);
+    updateCount();
 }
