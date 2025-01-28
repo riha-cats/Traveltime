@@ -30,7 +30,7 @@ function updateTimer() {
     }
 
     const totalMilliseconds = targetDate - initialDate;
-    const remainingPercentage = Math.round((timeDiff / totalMilliseconds) * 100);
+    const remainingPercentage = (timeDiff / totalMilliseconds) * 100;
 
     const totalHours = Math.floor(timeDiff / (1000 * 60 * 60));
     const hours = totalHours;
@@ -41,7 +41,7 @@ function updateTimer() {
     const formattedTime = `${hours}시간 ${minutes}분 ${seconds}초`;
     timerElement.textContent = formattedTime;
     millisecondsElement.textContent = `.${String(milliseconds).padStart(3, '0')}`;
-    remainingPercentageElement.textContent = remainingPercentage.toFixed(3) + "%";
+    remainingPercentageElement.textContent = remainingPercentage.toFixed(5) + "%";
     applyAnimation(timerElement);
 }
 
