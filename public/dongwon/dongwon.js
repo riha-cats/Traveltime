@@ -214,7 +214,7 @@ commentInput.addEventListener('input', () => {
 
 setInterval(() => {
     getComments();
-}, 100);
+}, 1000);
 
 
 // 동원이가 자기가 귀엽다는데 조금 개가타용. 
