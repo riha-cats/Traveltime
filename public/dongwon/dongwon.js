@@ -168,9 +168,9 @@ function addComment(){
     fetch('/comments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-            nickname: nickname.trim().slice(0, 7), 
-            comment: comment.trim().slice(0, 125) 
+        body: JSON.stringify({
+            nickname: nickname.trim().substring(0, 7),
+            comment: comment.trim().substring(0, 125)
         })
     })
     .then(response => {
