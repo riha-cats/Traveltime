@@ -25,6 +25,7 @@ const allowedIPs = process.env.ALLOWED_IPS?.split(',') || ['192.168.45.1', '127.
 const app = express();
 app.set('trust proxy', true);
 
+
 // 암호화 작업쪽
 app.use(helmet({
   contentSecurityPolicy: {
@@ -40,6 +41,7 @@ app.use(helmet({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/public', express.static(path.join(__dirname, 'public')));
+
 
 // TLS 콘픽쪽
 const sslOptions = {
@@ -90,6 +92,10 @@ app.get('/dongwon', checkMaintenance, (req, res) => {
 });
 
 app.post('/comments', async (req, res) => {
+  
+  // Console log
+  console.log(`[POST] Comment posted`);
+
   try {
     const sanitizedData = {
       nickname: DOMPurify.sanitize(req.body.nickname?.slice(0, 50)),
@@ -175,15 +181,6 @@ io.on('connection', (socket) => {
     console.log(`[Socket] 연결 해제: ${socket.id} (남은 사용자: ${onlineUsers})`);
   });
 });
-
-// CORS
-const cors = require('cors');
-
-app.use(cors({
-  origin: process.env.FRONTEND_URL || "https://mcfriday.xyz",
-  credentials: true
-}));
-
 
 
 

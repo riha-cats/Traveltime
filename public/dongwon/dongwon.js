@@ -156,6 +156,9 @@ const commentInput = document.getElementById('comment');
 const nicknameCounter = document.getElementById('nickname-counter');
 const commentCounter = document.getElementById('comment-counter');
 
+document.getElementById('add-comment-btn').addEventListener('click', addComment);
+
+
 function addComment(){
     const nickname = nicknameInput.value;
     const comment = commentInput.value;
@@ -165,6 +168,7 @@ function addComment(){
         return;
     }
 
+    console.log("addComment 함수 작동");
     fetch('/comments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -172,7 +176,7 @@ function addComment(){
             nickname: nickname.trim().substring(0, 7),
             comment: comment.trim().substring(0, 125)
         })
-    })
+    })    
     .then(response => {
         if (!response.ok) {
             throw new Error(`HTTP 오류: ${response.status}`);
