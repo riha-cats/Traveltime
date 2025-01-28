@@ -119,7 +119,7 @@ function handleBoxClick() {
     }
 
     // 정상 클릭 처리
-    const reactionTime = Date.now() - startTime;
+    const reactionTime = Date.now() - startTime - 80;
     reactionTimes.push(reactionTime);
     testCount++;
     
