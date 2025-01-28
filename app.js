@@ -1,120 +1,139 @@
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const https = require('https');
 const fs = require('fs');
-const bodyParser = require('body-parser');
+const { constants } = require('crypto');
+const helmet = require('helmet');
+const DOMPurify = require('isomorphic-dompurify');
 
-// IP 변수부분
-const allowedIPs = ['192.168.45.1', '127.0.0.1', '::ffff:127.0.0.1', '::1'];
+// 유틸쪽
+const dongwon = require('./Utils/dongwon');
 
-// 점검 변수 부분
-const maintenance = false;
+// Env 세팅
+const PORT = process.env.PORT || 443;
+const SSL_KEY_PATH = process.env.SSL_KEY_PATH || 'ssl/privkey.pem';
+const SSL_CERT_PATH = process.env.SSL_CERT_PATH || 'ssl/fullchain.pem';
+const SSL_CA_PATH = process.env.SSL_CA_PATH || 'ssl/chain.pem';
+const allowedIPs = process.env.ALLOWED_IPS?.split(',') || ['192.168.45.1', '127.0.0.1'];
 
-// SSL 부분
+// Express app 셋
+const app = express();
+app.set('trust proxy', true);
+
+// 암호화 작업쪽
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'"]
+    }
+  }
+}));
+
+// Body 파싱 & App use 부분
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use('/public', express.static(path.join(__dirname, 'public')));
+
+// TLS 콘픽쪽
 const sslOptions = {
-  key: fs.readFileSync('ssl/privkey.pem'),
-  cert: fs.readFileSync('ssl/fullchain.pem'),
-  ca: fs.readFileSync('ssl/chain.pem'),
+  key: fs.readFileSync(SSL_KEY_PATH),
+  cert: fs.readFileSync(SSL_CERT_PATH),
+  ca: fs.readFileSync(SSL_CA_PATH),
   honorCipherOrder: true,
-  secureOptions: require('constants').SSL_OP_NO_SSLv2 | require('constants').SSL_OP_NO_SSLv3 | require('constants').SSL_OP_NO_TLSv1 | require('constants').SSL_OP_NO_TLSv1_1,
+  secureOptions: 
+    constants.SSL_OP_NO_SSLv2 |
+    constants.SSL_OP_NO_SSLv3 |
+    constants.SSL_OP_NO_TLSv1 |
+    constants.SSL_OP_NO_TLSv1_1,
   ciphers: [
-      'ECDHE-RSA-AES256-GCM-SHA384',
-      'ECDHE-RSA-AES128-GCM-SHA256',
-      'ECDHE-ECDSA-AES256-GCM-SHA384',
-      'ECDHE-ECDSA-AES128-GCM-SHA256',
-      'DHE-RSA-AES256-GCM-SHA384',
-      'DHE-RSA-AES128-GCM-SHA256',
-      'AES128-GCM-SHA256',
-      'AES256-GCM-SHA384'
+    'ECDHE-ECDSA-AES128-GCM-SHA256',
+    'ECDHE-RSA-AES128-GCM-SHA256',
+    'ECDHE-ECDSA-AES256-GCM-SHA384',
+    'ECDHE-RSA-AES256-GCM-SHA384',
+    'DHE-RSA-AES128-GCM-SHA256',
+    'DHE-RSA-AES256-GCM-SHA384'
   ].join(':')
 };
 
+// 점검 미드웨어 
+// 1/28/25 - 프록시 서버 문제 가능성 염두 + IPv6 형식만 처리하던 문제를 해결함.
+const checkMaintenance = (req, res, next) => {
+  const clientIP = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket.remoteAddress;
+  const ipv4Address = clientIP.replace(/^::ffff:/, '');
 
-// Express 부분
-const app = express();
-const server = https.createServer(sslOptions, app);
+  if(process.env.MAINTENANCE_MODE === 'true' && !allowedIPs.includes(ipv4Address)) {
+    console.log(`[SECURITY] Maintenance access attempt from ${ipv4Address}`);
+    return res.redirect('/maintenance');
+  }
+  next();
+};
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use('/public', express.static(path.join(__dirname, 'public')));
 
+// 라우트
+app.get('/', checkMaintenance, (req, res) => {
+  const clientIP = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket.remoteAddress;
+  console.log(`[ACCESS] Site accessed from ${clientIP}`);
+  res.sendFile(path.resolve(__dirname, 'public', 'index', 'index.html'));
+});
 
-// Get
-app.get('/', (req, res) => {
-  const clientIP = req.ip;
-  const ipv4Address = clientIP.match(/::ffff:(\d+\.\d+\.\d+\.\d+)/);
-  const ipAddress = ipv4Address ? ipv4Address[1] : clientIP;
+app.post('/comments', async (req, res) => {
+  try {
+    const sanitizedData = {
+      nickname: DOMPurify.sanitize(req.body.nickname?.slice(0, 50)),
+      comment: DOMPurify.sanitize(req.body.comment?.slice(0, 500))
+    };
 
-  if (maintenance !== true) {
-    console.log("[!] 사이트 접속! : IP : " + clientIP);
-    res.sendFile(__dirname + '/public/index/index.html');
-  } else {
-    if (!allowedIPs.includes(ipAddress)) {
-      console.log("[!] 사이트 점검으로 Maintenance 로 이동 : " + clientIP);
-      res.redirect('/maintenance');
-    } else {
-      console.log("[!] 사이트 점검이나 내부 IP : " + clientIP);
-      res.sendFile(__dirname + '/public/index/index.html');
+    if(!sanitizedData.nickname || !sanitizedData.comment) {
+      return res.status(400).json({ success: false, error: 'Invalid input' });
     }
+
+    const result = await dongwon.addComment(sanitizedData);
+    res.json({ success: true, data: result });
+  } catch (error) {
+    console.error(`[ERROR] Comments: ${error.message}`);
+    res.status(500).json({ 
+      success: false, 
+      error: process.env.NODE_ENV === 'production' ? 'Server error' : error.message 
+    });
   }
 });
 
-app.get('/maintenance', (req, res) => {
-  res.sendFile(__dirname + '/public/maintenance/maintenance.html');
-});
-
-app.get('/dongwon', (req, res) => {
-  res.sendFile(__dirname + '/public/dongwon/dongwon.html');
-});
-
-
-
-
-
-
-// API Post
-// 댓글 업로드 부분
-app.post('/comments', (req, res) => {
-  // DB 처리, Dongwon.js 로 옮겼
-  require('./Utils/dongwon').addComment(req.body.nickname, req.body.comment, (err, result) => {
-    if (err) {
-      console.error(err.message);
-      res.status(500).json({ success: false, error: err.message });
-    } else {
-      res.json({ success: true });
-    }
-  });
-});
-// 댓글 불러오기
-app.get('/comments', (req, res) => {
-  require('./Utils/dongwon').getComments((err, rows) => {
-    if (err) {
-      console.error(err.message);
-      res.status(500).json({ success: false, error: err.message });
-    } else {
-      res.json(rows);
-    }
-  });
+app.get('/comments', async (req, res) => {
+  try {
+    const comments = await dongwon.getComments();
+    res.json(comments);
+  } catch (error) {
+    console.error(`[ERROR] Get Comments: ${error.message}`);
+    res.status(500).json({ 
+      success: false, 
+      error: process.env.NODE_ENV === 'production' ? 'Server error' : error.message 
+    });
+  }
 });
 
 
 
 
+// 에러 핸들링쪽 개선
+// Prefix -> [CRITICAL]
+app.use((err, req, res, next) => {
+  console.error(`[CRITICAL] ${err.stack}`);
+  res.status(500).sendFile(path.resolve(__dirname, 'public', '500', '500.html'));
+});
 
-
-
-
-
-
-// 404 부분
 app.use((req, res) => {
-  res.status(404).sendFile(path.join(__dirname, 'public', '404', '404.html'));
+  res.status(404).sendFile(path.resolve(__dirname, 'public', '404', '404.html'));
 });
 
 
-// 서버 Listen 부분
-server.listen(443, () => {
-  console.log('Server running on https://mcfriday.xyz:443');
+// 서버 listen 쪽 (env 로 개선)
+const server = https.createServer(sslOptions, app);
+server.listen(PORT, () => {
+  console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode`);
+  console.log(`Listening on https://${process.env.DOMAIN || 'localhost'}:${PORT}`);
 });
 
 module.exports = server;
