@@ -195,6 +195,8 @@ async function loadRankings() {
         ).join('');
         
         document.getElementById('rankings').innerHTML = rankingsHTML;
+        document.getElementById('nicknameInput').style.display = `none`;
+        document.getElementById('submitScore').style.display = `none`;
     } catch (error) {
         console.error('랭킹 로드 오류:', error);
     }

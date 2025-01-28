@@ -1,9 +1,10 @@
 @echo off
+chcp 65001
 title Maintenance Mode Control Panel
 color 0A
 
 set SERVER_DIR=C:\Users\Administrator\Desktop\Dongmom
-set ALLOWED_IPS=127.0.0.1,192.168.45.1  :: 허용 IP 콤마 구분
+set ALLOWED_IPS=192.168.45.1
 
 :menu
 cls
@@ -34,7 +35,6 @@ echo 정상 모드 복귀 중...
 goto restart_server
 
 :restart_server
-taskkill /f /im node.exe >nul 2>&1
 cd /d %SERVER_DIR%
 start "" node app.js
 timeout /t 3 /nobreak >nul
