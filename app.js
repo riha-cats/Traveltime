@@ -19,32 +19,6 @@ const allowedIPs = process.env.ALLOWED_IPS?.split(',') || ['192.168.45.1', '127.
 
 
 
-// Dongwon.js 쪽 Socket.io 부분 (1/28/25)
-const { Server } = require('socket.io');
-const io = new Server(server, {
-  cors: {
-    origin: "https://mcfriday.xyz",
-    credentials: true,
-    methods: ["GET", "POST"]
-  }
-});
-
-// 접속자 확인코드
-let onlineUsers = 0;
-
-io.on('connection', (socket) => {
-  onlineUsers++;
-  io.emit('userCount', onlineUsers);
-  console.log(`[Socket] 연결: ${socket.id} (현재 사용자: ${onlineUsers})`);
-
-  socket.on('disconnect', () => {
-    onlineUsers--;
-    io.emit('userCount', onlineUsers);
-    console.log(`[Socket] 연결 해제: ${socket.id} (남은 사용자: ${onlineUsers})`);
-  });
-});
-
-
 
 
 // Express app 셋
@@ -171,6 +145,40 @@ server.listen(PORT, () => {
   console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode`);
   console.log(`Listening on https://${process.env.DOMAIN || 'localhost'}:${PORT}`);
 });
+
+
+
+// Dongwon.js 쪽 Socket.io 부분 (1/28/25)
+const { Server } = require('socket.io');
+const io = new Server(server, {
+  cors: {
+    origin: "https://mcfriday.xyz",
+    credentials: true,
+    methods: ["GET", "POST"]
+  }
+});
+
+// 접속자 확인코드
+let onlineUsers = 0;
+
+io.on('connection', (socket) => {
+  onlineUsers++;
+  io.emit('userCount', onlineUsers);
+  console.log(`[Socket] 연결: ${socket.id} (현재 사용자: ${onlineUsers})`);
+
+  socket.on('disconnect', () => {
+    onlineUsers--;
+    io.emit('userCount', onlineUsers);
+    console.log(`[Socket] 연결 해제: ${socket.id} (남은 사용자: ${onlineUsers})`);
+  });
+});
+
+
+
+
+
+
+
 
 // App Moduel Export 쪽으로 변경.
 // Server 쪽은 강의글 보다 실패 ㅎ;
