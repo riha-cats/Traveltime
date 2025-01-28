@@ -79,6 +79,12 @@ app.get('/', checkMaintenance, (req, res) => {
   res.sendFile(path.resolve(__dirname, 'public', 'index', 'index.html'));
 });
 
+app.get('/dongwon', checkMaintenance, (req, res) => {
+  const clientIP = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket.remoteAddress;
+  console.log(`[ACCESS] Site accessed from ${clientIP}`);
+  res.sendFile(path.resolve(__dirname, 'public', 'dongwon', 'dongwon.html'));
+});
+
 app.post('/comments', async (req, res) => {
   try {
     const sanitizedData = {
