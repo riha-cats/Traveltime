@@ -100,7 +100,10 @@ app.post('/comments', async (req, res) => {
       return res.status(400).json({ success: false, error: 'Invalid input' });
     }
 
-    const result = await dongwon.addComment(sanitizedData);
+    const result = await dongwon.addComment(
+      sanitizedData.nickname, 
+      sanitizedData.comment
+    );
     res.json({ success: true, data: result });
   } catch (error) {
     console.error(`[ERROR] Comments: ${error.message}`);
@@ -172,6 +175,14 @@ io.on('connection', (socket) => {
     console.log(`[Socket] 연결 해제: ${socket.id} (남은 사용자: ${onlineUsers})`);
   });
 });
+
+// CORS
+const cors = require('cors');
+
+app.use(cors({
+  origin: process.env.FRONTEND_URL || "https://mcfriday.xyz",
+  credentials: true
+}));
 
 
 

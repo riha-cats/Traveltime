@@ -26,11 +26,9 @@ const addComment = (nickname, comment) => {
       return;
     }
 
-    db.run(
-      'INSERT INTO comments (nickname, comment) VALUES (?, ?)',
-      [nickname.trim(), comment.trim()],
-      function(err) {
-        if (err) return reject(err);
+    const stmt = db.prepare('INSERT INTO comments (nickname, comment) VALUES (?, ?)');
+    stmt.run([nickname, comment], function(err) {
+      if (err) return reject(err);
         resolve({ id: this.lastID });
       }
     );
