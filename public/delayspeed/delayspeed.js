@@ -159,3 +159,5 @@ function resetTest() {
     }, 2000);
     updateCount();
 }
+
+updateCount();
