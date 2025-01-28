@@ -7,7 +7,7 @@ let chart;
 
 
 function updateCount() {
-    document.getElementById('count').textContent = `[ ${count}/5 ]`;
+    document.getElementById('count').textContent = `[ ${testCount}/5 ]`;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
