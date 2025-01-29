@@ -10,73 +10,67 @@
 </head>
 <body>
     <div class="container">
-        <div class="dashboard">
-            <!-- 타이머 -->
-            <div class="card timer-card">
-                <div class="timer">
-                    <span class="main-time">Unknown</span><span class="milliseconds">Unknown</span>
-                </div>
-            </div>
-
-            <!-- 가격부분 -->
-            <div class="card price-card">
-                <div class="price">
-                    <span class="currency">₩</span><span class="amount">Unknown</span>
-                </div>
-            </div>
-
-            <!-- Stats Card -->
-            <div class="card stats-card">
-                <div class="stats">
-                    <div class="stat-item">
-                        <span class="stat-value">Unknown</span>
-                        <span class="stat-label">남은 시간</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card -->
-            <div class="card poru-card">
-                <div class="poru">
-                    <div class="stat-item">
-                        <span class="stat-value">Unknown</span>
-                        <span class="stat-label">개의 푸룬</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 달러 -->
-            <div class="card won-card">
-                <div class="wongom">
-                    <div class="stat-item">
-                        <span class="dollar-value">0</span>
-                        <span class="stat-label">달러</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 비트코인 -->
-            <div class="card bitcoin-card">
-                <div class="bitcoin">
-                    <div class="stat-item">
-                        <span class="bitcoin-value">0</span>
-                        <span class="stat-label">Bitcoin</span>
-                    </div>
-                </div>
+        <div class="header">
+            <img src="/public/Files/krwicon.png" alt="아이콘" class="icon"> 
+            <div class="header-text">
+                <h1>프라이데이가 눌러가는 날 확인하고 </h1>
+                <a href="#">동원이 응원하러 가기</a>
             </div>
         </div>
-        <div class="chatdash">
-            <!-- Chating -->
-            <span id="connect-player">접속자 0명</span>
-            <div id="comments"></div> <br>
-            <span id="nickname-setter">닉네임을 설정해주세요&nbsp&nbsp(<span id="nickname-counter">0/7</span>)</span>
-            <input type="text" id="nickname" placeholder="닉네임(7자 이내)" maxlength="7"><br>
-            <span id="nickname-setter">댓글을 적어주세요&nbsp&nbsp(<span id="comment-counter">0/125</span>)</span>
-            <textarea id="comment" placeholder="댓글을 입력하세요(125자 이내)" maxlength="125"></textarea><br>
+        <div class="section" id="fridayhub">
+            <h3>프라이데이 허브 <a href='/'><img id="right-arrow" src="/public/Files/right.png"></a></h3>
+        </div>
+        <div class="section" id="times">
+            <h4>전체</h4>
+            <div id="overy"></div>
+            <div id="times-item">
+                <img src="/public/Files/sandclock.png" alt="아이콘" class="item-icon">
+                <div class="item-content">
+                  <p>남은 시간</p>
+                  <h2 id="timer-main"><span id="timer"></span> <span id="millseconds">.000</span></h2>
+                </div>
+                <button></button>
+            </div>
+            <div id="times-item">
+                <img src="/public/Files/krwicon.png" alt="아이콘" class="item-icon">
+                <div class="item-content">
+                  <p>남은 시간 퍼센트률</p>
+                  <h2 id="timer-percent">0.00000%</h2>
+                </div>
+                <button></button>
+            </div>
+            <div id="times-item">
+                <img src="/public/Files/bank.png" alt="아이콘" class="item-icon">
+                <div class="item-content">
+                  <p>동원이의 이자</p>
+                  <h2 id="timer-money">1조 3009억 7208만 8912원</h2>
+                </div>
+                <button></button>
+            </div>
+            <div id="times-item">
+                <img src="/public/Files/drink.png" alt="아이콘" class="item-icon">
+                <div class="item-content">
+                  <p>푸룬주스 개수</p>
+                  <h2 id="timer-poru">1억 8000만 7281개</h2>
+                </div>
+                <button></button>
+            </div>
+        </div>
+        <h4>실시간 댓글 <span id="connection">0명</span></h4>
+        <div id="overy"></div>
+        <div class="section" id="comments">
+            <div id="overy"></div>
+        </div>
+        <div class="section input-box">
+            <label for="nickname" id="nicknamesetlabel">닉네임 설정:</label>
+            <input type="text" id="nickname" placeholder="닉네임을 입력하세요. (7자까지)">
+            <input type="text" id="comment" placeholder="댓글을 입력하세요. (125자까지)">
             <button id="add-comment-btn">댓글 추가</button>
         </div>
-        <a href="/" id="backtomain">메인으로 돌아가기</a>
     </div>
+    <br>
+    <br>
+
     <script src="../socket.io/socket.io.js"></script>
     <script src="/public/dongwon/dongwon.js"></script>
 </body>

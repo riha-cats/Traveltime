@@ -1,22 +1,15 @@
 // Timer
-const timerElement = document.querySelector('.main-time');
-const millisecondsElement = document.querySelector('.milliseconds');
-const priceElement = document.querySelector('.amount');
-const remainingPercentageElement = document.querySelector('.stats-card .stat-value'); 
+const timerElement = document.querySelector('#timer');
+const millisecondsElement = document.querySelector('#millseconds');
+const priceElement = document.querySelector('#timer-money');
+const remainingPercentageElement = document.querySelector('#timer-percent'); 
 
 // 푸룬 (4,050)
-const pruneCountElement = document.querySelector('.poru-card .stat-value');
-// 달러값 
-const dollarValueElement = document.querySelector('.won-card .dollar-value');
-const exchangeRate = 1431.07;
-
-// 비트코인 (자동화 시켜야할듯. 유지보수 귀찮)
-const bitcoinValueElement = document.querySelector('.bitcoin-card .bitcoin-value');
-const bitcoinprice = 141380970.61;
+const pruneCountElement = document.querySelector('#timer-poru');
 
 const initialPrice = 14000.00;
 const initialDate = new Date(2025, 0, 12, 18, 0, 0, 0);
-const targetDate = new Date(2025, 0, 31, 15, 30, 0, 0);
+const targetDate = new Date(2025, 0, 31, 14, 00, 0, 0);
 
 function updateTimer() {
     const now = new Date();
@@ -41,7 +34,7 @@ function updateTimer() {
     const formattedTime = `${hours}시간 ${minutes}분 ${seconds}초`;
     timerElement.textContent = formattedTime;
     millisecondsElement.textContent = `.${String(milliseconds).padStart(3, '0')}`;
-    remainingPercentageElement.textContent = remainingPercentage.toFixed(5) + "%";
+    remainingPercentageElement.textContent = remainingPercentage.toFixed(6) + "%";
     applyAnimation(timerElement);
 }
 
@@ -111,22 +104,14 @@ function updatePrice() {
     const now = new Date();
     const timeDiff = now - initialDate;
     const secondsDiff = Math.floor(timeDiff / 1000);
-    const ratePerSecond = (initialPrice * (initialPrice * 0.00152) + (initialPrice * 0.1));
+    const ratePerSecond = (initialPrice * (initialPrice * 0.00152) + (initialPrice * 1));
     const currentPrice = initialPrice + (ratePerSecond * secondsDiff);
 
     priceElement.textContent = formatPrice(currentPrice.toFixed(0));
     applyAnimation(priceElement);
 
     const pruneCount = Math.floor(currentPrice / 4050); // 푸룬주스 가격 (딥워터 기준)
-    pruneCountElement.textContent = formatNumberWithUnits(pruneCount);
-
-    const dollarValue = currentPrice / exchangeRate;
-    dollarValueElement.textContent = formatNumberWithUnits(dollarValue.toFixed(0));
-    applyAnimation(dollarValueElement);
-
-    const bitcoinValue = currentPrice / bitcoinprice;
-    bitcoinValueElement.textContent = formatNumberWithUnits(bitcoinValue.toFixed(8));
-    applyAnimation(bitcoinValueElement);
+    pruneCountElement.textContent = `${formatNumberWithUnits(pruneCount)}개`;
 }
 
 setInterval(() => {
@@ -134,13 +119,6 @@ setInterval(() => {
     updatePrice();
 }, 10);
 
-
-// BackGround 부분
-// const backgroundImage = "https://cdn.discordapp.com/attachments/1313056275407441970/1332942139717320794/image.png?ex=6797169a&is=6795c51a&hm=a76a2a6f9645e9c981a39d8cc91d535d11f1857eaaf80a82f3e1c3f7ad8dbfba&";
-// document.body.style.backgroundImage = `url(${backgroundImage})`;
-// document.body.style.backgroundSize = "cover";
-// document.body.style.backgroundRepeat = "no-repeat";
-// document.body.style.backgroundposition = "center";
 
 
 
@@ -187,7 +165,6 @@ function addComment(){
         if(!data.success) throw new Error(data.error);
         getComments();
         commentInput.value = '';
-        commentCounter.textContent = `0/125`;
     })
     .catch(error => {
         console.error('[!] 오류가 발생했습니다:', error);
@@ -198,37 +175,47 @@ function addComment(){
 
 // Get Comments 부분.
 function getComments(){
-    fetch('/comments')
-    .then(response => response.json())
-    .then(data => {
-        commentsContainer.innerHTML = '';
-        data.slice(0,10).reverse().forEach(comment => {
-            const commentDiv = document.createElement('div');
-            commentDiv.innerHTML = `<strong>${comment.nickname}:</strong> ${comment.comment}`;
-            commentsContainer.appendChild(commentDiv);
-        });
+    console.log('%c비활성화 된 함수를 실행하셨습니다.', 'font-size: 16px; color: red; font-weight: 100;');
+}
+
+
+
+function displayComments(comments) {
+    const commentsContainer = document.getElementById('comments');
+    commentsContainer.innerHTML = '';
+
+    comments.slice(0, 5).reverse().forEach(comment => {
+        const commentDiv = document.createElement('div');
+        commentDiv.classList.add('comment-box'); 
+
+        const safeNickname = escapeHtml(comment.nickname);
+        const safeComment = escapeHtml(comment.comment);
+
+
+        commentDiv.innerHTML = `<strong>${safeNickname}:</strong> ${safeComment} <span class="comment-timestamp">(${comment.timestamp})</span>`;
+        commentsContainer.appendChild(commentDiv);
     });
 }
 
 
-nicknameInput.addEventListener('input', () => {
-    const nicknameLength = nicknameInput.value.length;
-    nicknameCounter.textContent = `${nicknameLength}/7`;
-    if (nicknameLength > 7) {
-        nicknameInput.value = nicknameInput.value.substring(0, 7);
-    }
-});
 
-commentInput.addEventListener('input', () => {
-    const commentLength = commentInput.value.length;
-    commentCounter.textContent = `${commentLength}/125`;
-    if (commentLength > 125) {
-        commentInput.value = commentInput.value.substring(0, 125);
-    }
-});
+function escapeHtml(unsafe) {
+    return unsafe
+         .replace(/&/g, "&")
+         .replace(/</g, "<")
+         .replace(/>/g, ">")
+         .replace(/'/g, "'");
+}
 
 setInterval(() => {
-    getComments();
+    fetch('/comments')
+        .then(response => response.json())
+        .then(data => {
+            displayComments(data);
+        })
+        .catch(error => {
+            console.error('댓글 가져오기 오류:', error);
+        });
 }, 1000);
 
 // 최초 실행쪽
@@ -236,7 +223,7 @@ getComments();
 
 
 // 동원이가 자기가 귀엽다는데 조금 개가타용. 
-const connectPlayerSpan = document.getElementById('connect-player');
+const connectPlayerSpan = document.getElementById('connection');
 const socket = io();
 
 socket.on('userCount', (count) => {
